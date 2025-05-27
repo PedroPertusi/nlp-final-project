@@ -24,7 +24,7 @@ The five Models chosen for this experiment were (#TODO COLOCAR OS LINKS E UMA DE
 
 The datasets chosen for this experiment were:
 - [Sentiment140](https://www.kaggle.com/kazanova/sentiment140): A large collection of 1.6 million tweets labeled for sentiment (positive, negative, neutral), used for sentiment analysis on social media text.
-- [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset):A dataset of ~5,500 SMS messages labeled as spam or ham, ideal for binary text classification on short messages.
+- [Amazon Fine Food Reviews](https://www.kaggle.com/snap/amazon-fine-food-reviews):Contains over 560,000 food product reviews from Amazon with star ratings from 1 to 5, widely used for sentiment analysis and opinion mining.
 - [News Category Dataset](https://www.kaggle.com/rmisra/news-category-dataset): Contains ~200,000 news headlines labeled by category, used for multiclass topic classification.
 - [DBpedia Ontology Classification](https://www.kaggle.com/dbpedia/ontology-classification): Over 560,000 Wikipedia article abstracts categorized into 14 ontology classes for large-scale multi-class text classification.
 - [AG News Topic Classification](https://www.kaggle.com/agnews/ag-news): 120,000 news articles labeled into 4 topics (World, Sports, Business, Sci/Tech) for topic classification benchmarking.
