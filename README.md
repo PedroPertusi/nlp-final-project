@@ -18,7 +18,6 @@ The five Models chosen for this experiment were (#TODO COLOCAR OS LINKS E UMA DE
 - LDA
 - GloVE
 - BERT
-- Fine-Tuned BERT
 
 ## Datasets
 

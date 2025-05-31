@@ -175,3 +175,5 @@ cython_debug/
 
 /dataset
 .DS_Store
+
+glove.6B
