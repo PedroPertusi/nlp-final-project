@@ -4,7 +4,7 @@ Students: [Pedro Vaz de Moraes Pertusi](https://github.com/PedroPertusi), [Eduar
 
 ## 1. Problem Statement
 
-In modern NLP, a wide variety of text representations, from simple bag-of-words to deep contextual embeddings, can we achieve strong performance when enough data is available? In this work, we set out to **compare** four common pipelines:
+In modern NLP, a wide variety of text representations, from simple bag-of-words to deep contextual embeddings, can we achieve strong performance when enough data is available? In this work, we set out to **compare** four pipelines:
 
 1. **BoW (TF-IDF + Logistic Regression)**  
 2. **LDA topic distributions + Logistic Regression**  
@@ -25,7 +25,7 @@ $[
 \text{RelErrReduct} = \frac{\text{Error}_{\mathrm{baseline}} - \text{Error}_{\mathrm{model}}}{\text{Error}_{\mathrm{baseline}}}\times100\%.
 ]$
 
-Our **baseline** error is taken from the BoW pipeline at 20 % of data, mirroring ULMFiT’s approach of comparing against a simple feature baseline.
+Our **baseline** error is taken from the BoW pipeline at 20 % of data, mirroring ULMFiT’s approach of comparing against a simple feature baseline. The main purpose of usign the paper Howard & Ruder (2018) is to provide a **literature anchor**, allowing us to use cientific proven approaches to measure our results in a comparable way. We will not be implementing ULMFiT itself, but rather using its metrics to evaluate our pipelines.
 
 ---
 
@@ -33,8 +33,8 @@ Our **baseline** error is taken from the BoW pipeline at 20 % of data, mirroring
 
 1. **Feature Pipelines**  
    - **BoW**: TF-IDF vectorizer over unigrams + Logistic Regression  
-   - **LDA**: Topic Modelling with LDA + Logistic Regression using the topic distribuition for each document.
-   - **GloVe**: Pre-trained 100-dimensional GloVe word embeddings; represent each document by the average of its word vectors, then train a Logistic Regression classifier on these averaged embeddings  
+   - **LDA**: Topic Modelling + Logistic Regression using the topic distribuition for each document.
+   - **GloVe**: Pre-trained 100-dimensional word embeddings; represent each document by the average of its word vectors, then train a Logistic Regression classifier on these averaged embeddings  
    - **BERT**: Pre-trained `bert-base-uncased` to extract CLS-token embeddings; freeze BERT, train only a downstream Logistic Regression
 
 
@@ -42,16 +42,15 @@ Our **baseline** error is taken from the BoW pipeline at 20 % of data, mirroring
    - For each pipeline and each dataset, we sample **20 %, 40 %, 60 %, 80 %** of the original training set.  
    - We train a Logistic Regression classifier on each fraction and evaluate on the unchanged test set.  
    - We compute **Accuracy** and derive **ErrorRate = 1 – Accuracy**.  
-   - We then calculate **Relative Error Reduction** versus the 20 % BoW baseline, exactly as Howard & Ruder (2018) do for ULMFiT.
+   - We then calculate **Relative Error Reduction** versus the last iteration.
 
-3. **Literature Anchor**  
-   - Howard & Ruder (2018) demonstrate that fine-tuned language models reduce error by 18–24 % over conventional baselines across six tasks.  
-   - By applying their **exact metrics** to our four pipelines, we can directly compare how “classical” features (BoW, LDA, GloVe) and “modern” embeddings (BERT) scale with data, and measure, via **RelErrReduct**, the gains of deeper representations.
+3. **Literature Anchor**   
+   - By applying metrics between iterations of  model, as data progresses, and comparing the metrics between model iterations and between models, we follow a similar approach to Howard & Ruder (2018) in their ULMFiT paper.
 
 With this setup, our deliverables will include:
-- **Source code** for all four pipelines and the ULMFiT-style metric calculations.  
+- **Source code** for all four pipelines and the metric calculations.  
 - **Results files** (`*.csv`) containing Accuracy, ErrorRate and RelErrReduct for each dataset, pipeline and training fraction.  
-- **This report**, in which we compare our measured metrics against Howard & Ruder’s published ULMFiT numbers.
+- **This report**, in which we compare diferent approaches to diferent datasets, and analyze the results.
 - **Bert Embeddings**: We use the `bert-base-uncased` model from Hugging Face Transformers, extracting the CLS token embeddings for each document. To dowload the embeddings instead of running it yourself, you can access the google-drive link [here](https://drive.google.com/drive/folders/10ziy7Rds0WbUtDpdnVG4-x1tsQ9DHJ-3?usp=sharing).
 
 ## 3. Results
@@ -73,13 +72,16 @@ With this setup, our deliverables will include:
 |          | 60 % | 0.8803 | 0.1197 | 10.47 % |
 |          | 80 % | 0.8836 | 0.1164 | 12.94 % |
 
-**Absolute error vs. ULMFiT:**  
-- ULMFiT reports an AG News test error of **5.38 %** and an IMDb test error of **4.58 %**.  
-- Our BoW pipeline at 80 % reaches **9.70 %** error on AG and **11.64 %** on IMDb—higher in absolute terms, but…
+**Baseline Results (BoW):**
+- **AG News**: 20 % data yields **87.92 %** accuracy (error **12.08 %**).  
+- **Amazon Reviews**: 20 % data yields **72.23 %** accuracy (error **27.77 %**).  
+- **IMDb**: 20 % data yields **86.63 %** accuracy (error **13.37 %**).
 
-**Relative scaling behavior:**  
-- ULMFiT shows **18–24 %** relative error reduction as data increases.  
-- Our BoW pipeline achieves **19.7 %** reduction on AG and **12.9 %** on IMDb, closely matching the ULMFiT trend despite its simpler features.
+**Commentary (BoW):**
+- **AG News**:  
+  - At 20 % data, BoW achieves **87.92 %** accuracy (error **12.08 %**).  
+  - Scaling to 80 % yields **90.30 %** accuracy (error **9.70 %**), with a relative error reduction of **19.72 %** compared to the 20 % baseline.  
+  - This is a good indication that BoW can scale effectively with more data.
 
 ---
 
@@ -108,11 +110,8 @@ With this setup, our deliverables will include:
 - **IMDb shows thematic signal value:**  
   - IMDb accuracy grows from **78.37 %** (error 21.63 %) at 20 % to **80.32 %** (error 19.68 %) at 80 %.  
   - Relative error reduction of **9.02 %** on IMDb at 80 % indicates topics align better with movie-review classification than with short texts.  
-- **Comparison to ULMFiT:**  
-  - ULMFiT’s reported error reduction on AG News and IMDb is **18–24 %** .  
-  - LDA achieves only **13.79 %** on AG and **9.02 %** on IMDb—consistent with topic models’ limitations for classification compared to deep LMs.  
 - **Interpretation:**  
-  - LDA excels on datasets with coherent latent topics (IMDb), but fails to capture discriminative word-level features needed for short-text or multi-class tasks (AG, Amazon).
+  - LDA excels on datasets with coherent latent topics (IMDb), but fails to capture word-level features needed for short-text or multi-class tasks (AG, Amazon). Taking into account data scalling, we can see an improvement in accuracy and relative error reduction, even if so in the slightest, especially in the IMDB dataset, which aligns better with topic modeling.
 
 ---
 
@@ -142,14 +141,13 @@ With this setup, our deliverables will include:
   - Relative error reduction of **10.15 %** at 80 % surpasses BoW’s **3.51 %** and BERT’s **0.96 %**, indicating GloVe embeddings capture product-sentiment features more effectively with moderate data.  
 - **IMDb benefits from dense embeddings:**  
   - Accuracy rises from **82.60 %** (error 17.40 %) at 20 % to **86.25 %** (error 13.75 %) at 80 %.  
-  - Relative error reduction of **20.98 %** is on par with ULMFiT’s best (18–24 %) , showing that pretrained static vectors rival fine-tuned LMs when data is sufficient.  
+  - Relative error reduction of **20.98 %** shows us that pretrained static vectors rival fine-tuned LMs when data is sufficient.  
 - **Interpretation:**  
-  - GloVe embeddings require fewer examples to achieve strong performance. They capture semantic word relationships that generalize across topics, making them especially effective on short-text classification (AG) and sentiment tasks (IMDb, Amazon).  
-  - On the large, multi-class Amazon task, the relative gains remain under ULMFiT’s reported window, suggesting that fine-tuned contextual representations might be needed to push beyond **75–76 %** accuracy.  
+  - GloVe embeddings require fewer examples to achieve strong performance. They capture semantic word relationships that generalize across topics, making them effective on short-text classification (AG) and sentiment tasks (IMDb, Amazon).  
 - **Comparison to BoW & BERT:**  
   - On AG, GloVe (error 8.13 %) outperforms both BoW (error 9.70 %) and BERT (error 9.87 %) at 80 %.  
   - On IMDb, GloVe (error 13.75 %) slightly lags BoW (error 11.64 %) but meets ULMFiT’s scaling; BERT (error 12.48 %) performs slightly better than GloVe.  
-  - On Amazon, GloVe (error 24.08 %) outperforms BoW (26.79 %) and BERT (27.03 %), showing that static embeddings plus a simple classifier can exceed frozen BERT on large multi-class sets.
+  - On Amazon, GloVe (error 24.08 %) outperforms BoW (26.79 %) and BERT (27.03 %), indicating the difference between models is still significant.
 ---
 
 ### 3.4 BERT embeddings + Logistic Regression
@@ -172,8 +170,8 @@ With this setup, our deliverables will include:
 **Commentary (BERT):**  
 - **AG News scaling matches ULMFiT’s window:**  
   - At 20 % data, BERT’s error is **12.14 %**, very close to BoW’s **12.08 %** and GloVe’s **10.42 %**.  
-  - By 80 % data, error drops to **9.87 %**—a **18.74 %** relative reduction. This aligns with ULMFiT’s reported **18–24 %** window , despite us freezing BERT and only training a classifier on top.  
-  - Compared to GloVe’s **8.13 %** error at the same fraction, BERT is slightly worse on AG (error 9.87 % vs. 8.13 %). This suggests that static GloVe vectors plus a simple classifier can outperform frozen BERT embeddings when ample data is available.
+  - By 80 % data, error drops to **9.87 %**—a **18.74 %** relative reduction. This is a good indication that BERT embeddings can scale effectively with more data.
+  - Compared to GloVe’s **8.13 %** error at the same fraction, BERT is slightly worse on AG (error 9.87 % vs. 8.13 %).
 
 - **Amazon Reviews shows minimal gains:**  
   - BERT tops out at **72.97 %** accuracy (error **27.03 %**) at 80 % training size, only a **0.96 %** relative reduction from its 20 % baseline (error **27.29 %**).  
@@ -198,9 +196,8 @@ With this setup, our deliverables will include:
   - The AG reduction closely matches the ULMFiT window, while IMDb gains are lower—confirming that **freezing BERT** yields some benefit but full fine-tuning (as in ULMFiT) is needed to realize larger improvements.  
 
 - **Note on Amazon Reviews:**  
-  - ULMFiT did not evaluate the 5-way Amazon task; our frozen BERT baseline saturates at ~73 % accuracy with minimal relative gain.  
   - In contrast, GloVe’s **75.92 %** and BoW’s **73.21 %** suggest simpler representations may be more data-efficient when context fine-tuning is unavailable.  
-  - A future step will be to fine-tune the entire BERT model on Amazon Reviews to gauge the lift from end-to-end LM adaptation.
+  - A future step will be to fine-tune the entire BERT model, similar to ULMFiT, to see if we can achieve the same or better results than GloVe and BoW on this dataset.
 
 ---
 
@@ -209,3 +206,7 @@ With this setup, our deliverables will include:
 2. **BERT embeddings (frozen-CLS)** roughly match BoW on AG but lag on IMDb and Amazon. Without full fine-tuning, BERT’s gains are muted—confirming Howard & Ruder’s conclusion that layer-wise fine-tuning is critical for deep LM advantages.  
 3. **LDA topic features** underperform most representations, except on IMDb where thematic signals partly compensate. Topic-based features simply cannot scale as effectively for short-form or multi-class tasks.  
 4. **BoW (TF-IDF + LR)** remains a strong simple baseline: its scaling behavior (≈ 19.7 % reduction on AG, ≈ 12.9 % on IMDb) parallels ULMFiT’s anomaly-free gains, illustrating that classic linear models still hold considerable power with more data.  
+
+- **Future Directions:**  
+  - Fine-tune BERT end-to-end on AG News, Amazon Reviews, and IMDb to evaluate the deep LM adaptation, simillar to ULMFiT’s approach.
+  - Test on even larger datasets to see if we further away model advantages, with larger data even models that are weaker in tasks, such as LDA for multiclass classification, can achieve better/similar results to the other models.
