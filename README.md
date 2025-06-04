@@ -210,3 +210,9 @@ With this setup, our deliverables will include:
 - **Future Directions:**  
   - Fine-tune BERT end-to-end on AG News, Amazon Reviews, and IMDb to evaluate the deep LM adaptation, simillar to ULMFiT’s approach.
   - Test on even larger datasets to see if we further away model advantages, with larger data even models that are weaker in tasks, such as LDA for multiclass classification, can achieve better/similar results to the other models.
+
+## **4. Video**
+[![Project Demo](https://img.youtube.com/vi/TpUx8V3pjQU/hqdefault.jpg)](https://youtu.be/TpUx8V3pjQU)
+
+
+
